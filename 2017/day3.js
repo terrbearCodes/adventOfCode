@@ -1,5 +1,6 @@
 
 let visited = [ "0,0" ]; //start at 1st entry already in 
+let part2 = { "0,0": 1 };
 
 const turns = [
     [1,0], //RIGHT
@@ -8,6 +9,7 @@ const turns = [
     [0, -1] //DOWN
 ]
 
+const inputVal = 277678;
 
 function pathFromSquare(num){
     let shouldTurn = true;
@@ -17,12 +19,41 @@ function pathFromSquare(num){
             currentTurn = (currentTurn + 1) % turns.length
         }
         
-        visited.push(calcPlacement( turns[currentTurn] ));
+        // visited.push(calcPlacement( turns[currentTurn] ));
+        let position = calcPlacement( turns[currentTurn] );
+        visited.push( position );
+        console.log(position);
+        part2[position] = calcSquareValue(position);
+        console.log(`${position} : ${part2[position]}`);
+        if(part2[position] > num){
+            return part2[position];
+        }
 
         shouldTurn = canTurn(turns[(currentTurn + 1) % turns.length])
         
     }
     return calcDistance(visited[visited.length-1])
+}
+
+function calcSquareValue(position){
+    const posArray = position.split(',').map(v => parseInt(v));
+    let adjacents = [
+        [posArray[0] +1, posArray[1]],  // to the right
+        [posArray[0] +1, posArray[1] +1], // rigth upper diag
+        [posArray[0], posArray[1] + 1], // up
+        [posArray[0] -1, posArray[1] + 1], // left upper diag
+        [posArray[0] -1, posArray[1]],  // left
+        [posArray[0] -1, posArray[1] -1], // left lower diag
+        [posArray[0] , posArray[1] -1], // down
+        [posArray[0] +1, posArray[1] -1], // right lower diag
+    ]
+    let sum = 0
+    adjacents.forEach( v => {
+        if(part2[v.join(',')]){
+            sum += part2[v.join(',')];
+        }
+    })
+    return sum;
 }
 
 function calcDistance(position){
@@ -43,4 +74,4 @@ function canTurn(move){
 }
 
 console.log(`PATH FOR 277678: ${pathFromSquare(277678)}`);
-// console.log(pathFromSquare(1024))
+// console.log(pathFromSquare(100))
